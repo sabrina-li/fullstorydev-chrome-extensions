@@ -1,0 +1,147 @@
+### Note that comments are allowed, but only single-line comments, prefixed with whitespace + `###`
+###
+### You may find it useful to test regular expressions at https://regex101.com/
+{
+  "script_swap_version": 1,
+
+  ### This is the total set of URLs that will be processed for redirects + header rewrites
+  ### It is unlikely that you will need to change this
+  "url_patterns": [ "*://*.fullstory.com/*", "*://*.onfire.fyi/*", "*://preview.ops.fs.team/*", "*://*.fullstory.test/*" ],
+
+  "default_host_settings": {
+    "paths": [
+      { "host_prefix": "app.", "path_prefix": "/s/" },
+      { "host_prefix": "edge.", "path_prefix": "/s/" },
+      { "host_prefix": "play.", "path_prefix": "/s/" },
+      { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" }
+    ],
+    "headers": [
+      ### Don't spam our prod CSP endpoints with scriptswap garbage
+      { "name": "report-to", "delete": true },
+      ### Replace the enforcing CSP header
+      { "name": "content-security-policy", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043 preview.ops.fs.team;" },
+      { "name": "content-security-policy", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+      { "name": "content-security-policy", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+      { "name": "content-security-policy", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
+      { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
+      { "name": "content-security-policy", "pattern": "connect-src ([^;]+);", "replace": "connect-src $1 api.openai.com;"},
+      ### Remove all the nonce-based script CSPs
+      { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" },
+      ### Replace the report-only headers as well. These may be removed when we only use the above header.
+      { "name": "content-security-policy-report-only", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043;" },
+      { "name": "content-security-policy-report-only", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043;" },
+      { "name": "content-security-policy-report-only", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043;" },
+      { "name": "content-security-policy-report-only", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
+      { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
+      ### Remove all the nonce-based script CSPs
+      { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" }
+    ]
+  },
+  ### Hosts are many to one (deployed to local/previewer) and we always want to swap for all of them
+  "hosts": [
+    {
+      "id": "production",
+      ### Note the negative lookbehind for staging below!
+      "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)(?<!staging\\.)fullstory.com",
+      "replace": "https://$1fullstory.test:8043",
+      "paths": [
+        { "host_prefix": "app.", "path_prefix": "/s/" },
+        { "host_prefix": "edge.", "path_prefix": "/s/" },
+        { "host_prefix": "play.", "path_prefix": "/s/" },
+        { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" }
+      ],
+      "headers": [
+        ### Don't spam our prod CSP endpoints with scriptswap garbage
+        { "name": "report-to", "delete": true },
+        ### Replace the enforcing CSP header
+        { "name": "content-security-policy", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
+        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
+        { "name": "content-security-policy", "pattern": "connect-src ([^;]+);", "replace": "connect-src $1 api.openai.com;"},
+        ### Remove all the nonce-based script CSPs
+        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" },
+        ### Replace the report-only headers as well. These may be removed when we only use the above header.
+        { "name": "content-security-policy-report-only", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
+        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
+        ### Remove all the nonce-based script CSPs
+        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" }
+      ]
+    },
+    {
+      "id": "staging",
+      "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)staging.fullstory.com",
+      "replace": "https://$1fullstory.test:8043",
+      "paths": [
+        { "host_prefix": "app.", "path_prefix": "/s/" },
+        { "host_prefix": "edge.", "path_prefix": "/s/" },
+        { "host_prefix": "play.", "path_prefix": "/s/" },
+        { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" }
+      ],
+      "headers": [
+        { "name": "content-security-policy", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
+        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
+        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" },
+        { "name": "content-security-policy", "pattern": "connect-src ([^;]+);", "replace": "connect-src $1 api.openai.com;"},
+        { "name": "content-security-policy-report-only", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
+        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
+        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" }
+      ]
+    },
+    {
+      "id": "playpen",
+      "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)onfire.fyi",
+      "replace": "https://$1fullstory.test:8043",
+      "paths": [
+        { "host_prefix": "app.", "path_prefix": "/s/" },
+        { "host_prefix": "edge.", "path_prefix": "/s/" },
+        { "host_prefix": "play.", "path_prefix": "/s/" },
+        { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" }
+      ],
+      "headers": [
+        { "name": "content-security-policy", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+        { "name": "content-security-policy", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
+        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
+        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" },
+        { "name": "content-security-policy", "pattern": "connect-src ([^;]+);", "replace": "connect-src $1 api.openai.com;"},
+        { "name": "content-security-policy-report-only", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043;" },
+        { "name": "content-security-policy-report-only", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
+        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
+        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" }
+      ]
+    }
+  ],
+
+  ### Reverse hosts are one to one. We can only swap for one set of resources between prod/staging/playpen/previewer
+  "reverse_hosts": {
+    "production": {
+      "id": "production-reverse",
+      "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)fullstory.test:8043",
+      "replace": "https://$1fullstory.com"
+    },
+    "staging": {
+      "id": "staging-reverse",
+      "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)fullstory.test:8043",
+      "replace": "https://$1staging.fullstory.com"
+    },
+    "playpen": {
+      "id": "playpen-reverse",
+      "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)fullstory.test:8043",
+      "replace": "https://$1onfire.fyi"
+    }
+  }
+}
