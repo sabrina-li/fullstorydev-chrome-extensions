@@ -43,86 +43,17 @@
       "id": "production",
       ### Note the negative lookbehind for staging below!
       "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)(?<!staging\\.)fullstory.com",
-      "replace": "https://$1fullstory.test:8043",
-      "paths": [
-        { "host_prefix": "app.", "path_prefix": "/s/" },
-        { "host_prefix": "edge.", "path_prefix": "/s/" },
-        { "host_prefix": "play.", "path_prefix": "/s/" },
-        { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" }
-      ],
-      "headers": [
-        ### Don't spam our prod CSP endpoints with scriptswap garbage
-        { "name": "report-to", "delete": true },
-        ### Replace the enforcing CSP header
-        { "name": "content-security-policy", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
-        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
-        { "name": "content-security-policy", "pattern": "connect-src ([^;]+);", "replace": "connect-src $1 api.openai.com;"},
-        ### Remove all the nonce-based script CSPs
-        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" },
-        ### Replace the report-only headers as well. These may be removed when we only use the above header.
-        { "name": "content-security-policy-report-only", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
-        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
-        ### Remove all the nonce-based script CSPs
-        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" }
-      ]
+      "replace": "https://$1fullstory.test:8043"
     },
     {
       "id": "staging",
       "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)staging.fullstory.com",
-      "replace": "https://$1fullstory.test:8043",
-      "paths": [
-        { "host_prefix": "app.", "path_prefix": "/s/" },
-        { "host_prefix": "edge.", "path_prefix": "/s/" },
-        { "host_prefix": "play.", "path_prefix": "/s/" },
-        { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" }
-      ],
-      "headers": [
-        { "name": "content-security-policy", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
-        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
-        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" },
-        { "name": "content-security-policy", "pattern": "connect-src ([^;]+);", "replace": "connect-src $1 api.openai.com;"},
-        { "name": "content-security-policy-report-only", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
-        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
-        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" }
-      ]
+      "replace": "https://$1fullstory.test:8043"
     },
     {
       "id": "playpen",
       "pattern": "https://(?<hostprefix>([\\w\\-]+\\.)+)onfire.fyi",
-      "replace": "https://$1fullstory.test:8043",
-      "paths": [
-        { "host_prefix": "app.", "path_prefix": "/s/" },
-        { "host_prefix": "edge.", "path_prefix": "/s/" },
-        { "host_prefix": "play.", "path_prefix": "/s/" },
-        { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" }
-      ],
-      "headers": [
-        { "name": "content-security-policy", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
-        { "name": "content-security-policy", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
-        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
-        { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" },
-        { "name": "content-security-policy", "pattern": "connect-src ([^;]+);", "replace": "connect-src $1 api.openai.com;"},
-        { "name": "content-security-policy-report-only", "pattern": "frame-src 'self' ([^;]+);", "replace": "frame-src 'self' $1 play.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "style-src 'self' ([^;]+);", "replace": "style-src 'self' $1 app.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "img-src 'self' ([^;]+);", "replace": "img-src 'self' $1 app.fullstory.test:8043;" },
-        { "name": "content-security-policy-report-only", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
-        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 $1;" },
-        { "name": "content-security-policy-report-only", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" }
-      ]
+      "replace": "https://$1fullstory.test:8043"
     }
   ],
 
