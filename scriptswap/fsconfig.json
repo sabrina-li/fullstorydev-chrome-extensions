@@ -25,6 +25,7 @@
       { "name": "content-security-policy", "pattern": "script-src ([^;]+);", "replace": "script-src 'unsafe-eval' 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
       { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+);", "replace": "script-src-elem 'unsafe-inline' app.fullstory.test:8043 edge.fullstory.test:8043 preview.ops.fs.team $1;" },
       { "name": "content-security-policy", "pattern": "font-src 'self' ([^;]+);", "replace": "font-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
+      { "name": "content-security-policy", "pattern": "connect-src 'self' ([^;]+);", "replace": "connect-src 'self' $1 app.fullstory.test:8043 preview.ops.fs.team;" },
       ### Remove all the nonce-based script CSPs
       { "name": "content-security-policy", "pattern": "script-src-elem ([^;]+?)(\\s*'sha256-[^']+'\\s*)+;", "replace": "script-src-elem $1;" },
       ### Replace the report-only headers as well. These may be removed when we only use the above header.
