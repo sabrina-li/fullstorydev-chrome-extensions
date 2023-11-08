@@ -13,7 +13,10 @@
       { "host_prefix": "app.", "path_prefix": "/s/" },
       { "host_prefix": "edge.", "path_prefix": "/s/" },
       { "host_prefix": "play.", "path_prefix": "/s/" },
-      { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" }
+      { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" },
+      { "host_prefix": "app.", "path_prefix": "/wfs/" },
+      { "host_prefix": "edge.", "path_prefix": "/wfs/" },
+      { "host_prefix": "play.", "path_prefix": "/wfs/" }
     ],
     "headers": [
       ### Don't spam our prod CSP endpoints with scriptswap garbage
