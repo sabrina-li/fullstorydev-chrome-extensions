@@ -16,7 +16,9 @@
       { "host_prefix": "webber.internal.", "path_prefix": "/admin/s/" },
       { "host_prefix": "app.", "path_prefix": "/wfs/" },
       { "host_prefix": "edge.", "path_prefix": "/wfs/" },
-      { "host_prefix": "play.", "path_prefix": "/wfs/" }
+      { "host_prefix": "play.", "path_prefix": "/wfs/" },
+      { "host_prefix": "solrman.", "path_prefix": "/v2/s/" },
+      { "host_prefix": "eunoe.", "path_prefix": "/v2/s/" }
     ],
     "headers": [
       ### Don't spam our prod CSP endpoints with scriptswap garbage
